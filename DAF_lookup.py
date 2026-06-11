@@ -32,6 +32,7 @@ from pipeline_settings import (
     count_vcf_derived_alleles,
 )
 
+
 default_input_megafile= "/scratch/myang_shared/lab/selection/data_references/worldwide_populations_inputfile.tsv"
 
 dataset_dict = {
@@ -51,7 +52,7 @@ dataset_dict = {
     },
     "GAP": {
         "dataset_names": {"GAP", "GA100K"},
-        "metadata": "/scratch/myang_shared/lab/selection/data_references/GA100Ksubset_metadata2.txt",
+        "metadata": "/scratch/myang_shared/lab/Aine/alcohol/Relate/GA100Ksubset_metadata2.txt",
         "vcf_template": "/scratch/myang_shared/data/GA100K/phased_eagle/addAA/GA100K_addAA_chr{chrom}_mm1_maf0.1_eagle.vcf.gz",
         "sample_col": "GA_sample_ID",
         "label_cols": [
@@ -88,7 +89,8 @@ output_cols = [
     "derived_count",
     "ancestral_count",
     "total_allele_count",
-    "DAF"
+    "DAF",
+    "status"
 ]
 
 
@@ -348,7 +350,8 @@ def blank_result_row(dataset, group_record, target_snp, chrom, vcf_path, status)
         "derived_count": "",
         "ancestral_count": "",
         "total_allele_count": "",
-        "DAF": ""
+        "DAF": "",
+        "status": status
     }
 
 
@@ -490,23 +493,24 @@ def calculate_dataset_rows(dataset, group_records, target_snp, chrom):
                 daf = daf_float
 
         rows.append({
-                "dataset": dataset,
-                "group_name": group_name,
-                "region": group_record.get("region", ""),
-                "involved_groups": group_record.get("involved_groups", ""),
-                "matched_groups": ";".join(matched_groups),
-                "unmatched_groups": ";".join(unmatched_groups),
-                "snp": group_record.get("target_snp", ""),
-                "chromosome": group_record.get("chrom", ""),
-                "reference_allele": group_record.get("ref", ""),
-                "alternative_allele": group_record.get("alt", ""),
-                "ancestral_allele": group_record.get("ancestral", ""),
-                "derived_allele": group_record.get("derived", ""),
-                "derived_count": group_record.get("D", ""),
-                "ancestral_count": group_record.get("A", ""),
-                "total_allele_count": group_record.get("T", ""),
-                "DAF": group_record.get("daf", "")
-                })
+            "dataset": dataset,
+            "group_name": group_name,
+            "region": group_record.get("region", ""),
+            "involved_groups": group_record.get("involved_groups", ""),
+            "matched_groups": ";".join(matched_groups),
+            "unmatched_groups": ";".join(unmatched_groups),
+            "snp": target_snp,
+            "chromosome": chrom,
+            "reference_allele": ref,
+            "alternative_allele": alt,
+            "ancestral_allele": ancestral,
+            "derived_allele": derived,
+            "derived_count": D,
+            "ancestral_count": A,
+            "total_allele_count": T,
+            "DAF": daf,
+            "status": status,
+        })
 
         if status == "OK":
             print(
